@@ -77,11 +77,36 @@ resumen_precio <- data.frame(
 
 resumen_precio
 
-## Gráficos y estadísticos
+# Gráfico de evolución del precio de cierre
+plot(
+  precio_cierre,
+  main = "Evolución del precio de cierre de Apple (AAPL)",
+  xlab = "Fecha",
+  ylab = "Precio de cierre",
+  col = "blue"
+)
 
+# Cálculo de media móvil de 30 días
+media_movil_30 <- rollmean(precio_cierre, k = 30, fill = NA, align = "right")
 
-# Interpretación de la tendencia
+# Gráfico del precio de cierre con media móvil
+plot(
+  precio_cierre,
+  main = "Precio de cierre de Apple con media móvil de 30 días",
+  xlab = "Fecha",
+  ylab = "Precio de cierre",
+  col = "gray"
+)
 
+lines(media_movil_30, col = "red", lwd = 2)
+
+legend(
+  "topleft",
+  legend = c("Precio de cierre", "Media móvil 30 días"),
+  col = c("gray", "red"),
+  lty = 1,
+  bty = "n"
+)
 
 
 # 2. ESTACIONARIEDAD Y TRANSFORMACIÓN DE LA SERIE
