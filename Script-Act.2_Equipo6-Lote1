@@ -112,14 +112,42 @@ legend(
 # 2. ESTACIONARIEDAD Y TRANSFORMACIÓN DE LA SERIE
 # 2.1 Retornos logarítmicos
 
+# Cálculo de retornos logarítmicos diarios
+retornos <- diff(log(precio_cierre))
+retornos <- na.omit(retornos)
 
 # 2.2 ACF y PACF
+# ACF y PACF de los retornos logarítmicos
+par(mfrow = c(1, 2))
 
+acf(retornos, main = "ACF retornos")
+pacf(retornos, main = "PACF retornos")
 
-# 2.3 Test ADF
+par(mfrow = c(1, 1))
 
+# 2.3 Dickey-Fuller aumentado
+
+# Test ADF sobre la serie de precios de cierre
+adf_precio <- adf.test(as.numeric(precio_cierre), k = 10)
+adf_precio
+## p-value = 0.2529: La serie original del precio de cierre de Apple no puede 
+## considerarse estacionaria
+
+# Test ADF sobre retornos
+adf_retornos <- adf.test(as.numeric(retornos), k = 10)
+adf_retornos
+## p‑value = 0.01. Esto implica:
+
+  # Rechazamos la hipótesis nula (H0): la serie tiene raíz unitaria → no es estacionaria.
+
+  # Aceptamos la hipótesis alternativa (H1): la serie es estacionaria.
 
 # 2.4 Justificación de la modificación de la serie
+## El análisis de la estacionariedad nos lleva a una conclusión clara: para 
+## construir el modelo predictivo no debemos ignorar la falta de estacionariedad 
+## de la serie original. En el caso de ARIMA, esto justifica el uso de diferenciación,
+## ya que el modelo necesita trabajar con una serie estabilizada para poder generar 
+## predicciones más consistentes.
 
 
 # 3. MODELO PREDICTIVO
