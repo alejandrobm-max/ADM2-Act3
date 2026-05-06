@@ -1,0 +1,142 @@
+# 0. INTRODUCCIÓN Y OBJETIVO DEL ANÁLISIS
+
+### En esta actividad analizamos la evolución histórica del precio de cierre de ###
+### Apple Inc. (AAPL) con el objetivo de construir un modelo de predicción      ###
+### basado en series temporales. Para ello, trabajamos con datos financieros    ###
+### descargados desde Yahoo Finance, realizamos un análisis exploratorio de la  ###
+### serie, comprobamos su estacionariedad y aplicamos modelos predictivos que   ###
+### permitan estimar el comportamiento del precio durante mayo de 2025.         ###
+
+### El propósito final del análisis es evaluar la fiabilidad de la predicción   ###
+### obtenida y extraer conclusiones útiles desde una perspectiva financiera,    ###
+### considerando cómo las fluctuaciones del precio pueden influir en decisiones ###
+### de inversión, gestión del riesgo, valoración empresarial y planificación    ###
+### financiera.                                                                 ###
+
+# 1. DESCARGA, PREPARACIÓN Y EXPLORACIÓN INICIAL DE LOS DATOS
+# 1.1 Carga de librerías
+library(quantmod)
+library(forecast)
+library(tseries)
+library(prophet)
+library(dplyr)
+
+# 1.2 Descarga de datos de AAPL
+getSymbols("AAPL", src = "yahoo", from = "2015-01-01", to = "2025-06-01")
+
+# Nos quedamos con el precio de cierre
+precio_cierre <- Cl(AAPL)
+head(precio_cierre)
+
+# 1.3 Análisis exploratorio inicial del precio de cierre de la acción de APPLE
+
+# Convertimos la serie de precio de cierre en un dataframe para facilitar el análisis
+datos_precio <- data.frame(
+  fecha = index(precio_cierre),
+  precio_cierre = as.numeric(precio_cierre)
+)
+
+# Resumen estadístico básico
+summary(datos_precio$precio_cierre)
+
+# Cálculo de indicadores descriptivos principales
+precio_inicial <- first(datos_precio$precio_cierre)
+precio_final <- last(datos_precio$precio_cierre)
+
+variacion_absoluta <- precio_final - precio_inicial
+variacion_porcentual <- (variacion_absoluta / precio_inicial) * 100
+
+precio_minimo <- min(datos_precio$precio_cierre, na.rm = TRUE)
+precio_maximo <- max(datos_precio$precio_cierre, na.rm = TRUE)
+precio_medio <- mean(datos_precio$precio_cierre, na.rm = TRUE)
+desviacion_precio <- sd(datos_precio$precio_cierre, na.rm = TRUE)
+
+# Tabla resumen del precio de cierre
+resumen_precio <- data.frame(
+  Indicador = c(
+    "Precio inicial",
+    "Precio final",
+    "Variación absoluta",
+    "Variación porcentual",
+    "Precio mínimo",
+    "Precio máximo",
+    "Precio medio",
+    "Desviación típica"
+  ),
+  Valor = round(c(
+    precio_inicial,
+    precio_final,
+    variacion_absoluta,
+    variacion_porcentual,
+    precio_minimo,
+    precio_maximo,
+    precio_medio,
+    desviacion_precio
+  ), 2)
+)
+
+resumen_precio
+
+## Gráficos y estadísticos
+
+
+# Interpretación de la tendencia
+
+
+
+# 2. ESTACIONARIEDAD Y TRANSFORMACIÓN DE LA SERIE
+# 2.1 Retornos logarítmicos
+
+
+# 2.2 ACF y PACF
+
+
+# 2.3 Test ADF
+
+
+# 2.4 Justificación de la modificación de la serie
+
+
+# 3. MODELO PREDICTIVO
+# 3.1 División entrenamiento/test
+
+
+# 3.2 Modelo ARIMA
+
+
+# 3.3 Modelo Prophet
+
+
+# 3.4 Predicción de mayo de 2025
+
+
+
+# 4. EVALUACIÓN DEL MODELO
+# 4.1 Real vs predicho
+
+
+# 4.2 MAE, RMSE y MAPE
+
+
+# 4.3 Comparación de modelos
+
+
+# 4.4 Fiabilidad de la predicción
+
+
+
+# 5. INTERPRETACIÓN FINANCIERA ESTRATÉGICA
+# 5.1 Valoración
+
+
+# 5.2 Inversión
+
+
+# 5.3 Riesgo
+
+
+# 5.4 Deuda, recompra de acciones y dividendos
+
+
+
+# 6. CONCLUSIONES FINALES
