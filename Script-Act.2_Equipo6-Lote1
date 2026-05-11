@@ -215,14 +215,100 @@ plot(modelo_prophet, pred_prophet) +
 # 4. EVALUACIÓN DEL MODELO
 # 4.1 Real vs predicho
 
+# Valores reales del conjunto de test
+
+real_valores <- as.numeric(test)
+
+# Valores predichos por ARIMA (media de la predicción puntual)
+pred_arima_valores <- as.numeric(pred_arima$mean)
+
+# Valores predichos por Prophet (yhat)
+pred_prophet_valores <- pred_prophet$yhat
+
+# Dataframe comparativo
+comparacion <- data.frame(
+  fecha         = index(test),
+  real          = real_valores,
+  pred_arima    = pred_arima_valores,
+  pred_prophet  = pred_prophet_valores
+)
+
+print(comparacion)
+
+# Gráfico real vs predicho
+
+comp_ext <- data.frame(
+  fecha        = c(index(precio_cierre["2024-01-01/2025-04-30"]), comparacion$fecha),
+  real         = c(as.numeric(precio_cierre["2024-01-01/2025-04-30"]), comparacion$real),
+  pred_arima   = c(rep(NA, nrow(precio_cierre["2024-01-01/2025-04-30"])), comparacion$pred_arima),
+  pred_prophet = c(rep(NA, nrow(precio_cierre["2024-01-01/2025-04-30"])), comparacion$pred_prophet)
+)
+
+ggplot(comp_ext, aes(x = fecha)) +
+  geom_line(aes(y = real,         color = "Real")) +
+  geom_line(aes(y = pred_arima,   color = "ARIMA"),   linetype = "dashed") +
+  geom_line(aes(y = pred_prophet, color = "Prophet"), linetype = "dotdash") +
+  geom_vline(xintercept = as.Date("2025-05-01"), linetype = "dotted", color = "gray40") +
+  scale_color_manual(values = c("Real" = "black", "ARIMA" = "steelblue", "Prophet" = "tomato"), na.translate = FALSE) +
+  labs(title = "Real vs Predicho - Mayo 2025", x = "Fecha", y = "USD", color = "Modelo") +
+  theme_minimal()
 
 # 4.2 MAE, RMSE y MAPE
 
+calcular_metricas <- function(real, predicho, nombre_modelo) {
+  mae  <- mean(abs(real - predicho))
+  rmse <- sqrt(mean((real - predicho)^2))
+  mape <- mean(abs((real - predicho) / real)) * 100
+  
+  data.frame(
+    Modelo = nombre_modelo,
+    MAE    = round(mae,  2),
+    RMSE   = round(rmse, 2),
+    MAPE   = round(mape, 2)
+  )
+}
 
 # 4.3 Comparación de modelos
 
+metricas_arima   <- calcular_metricas(real_valores, pred_arima_valores,   "ARIMA")
+metricas_prophet <- calcular_metricas(real_valores, pred_prophet_valores, "Prophet")
+
+tabla_metricas <- rbind(metricas_arima, metricas_prophet)
+print(tabla_metricas)
 
 # 4.4 Fiabilidad de la predicción
+# Intervalos de confianza de ARIMA para mayo 2025
+intervalos_arima <- data.frame(
+  fecha   = index(test),
+  real    = real_valores,
+  li_80   = as.numeric(pred_arima$lower[, 1]),
+  ls_80   = as.numeric(pred_arima$upper[, 1]),
+  li_95   = as.numeric(pred_arima$lower[, 2]),
+  ls_95   = as.numeric(pred_arima$upper[, 2])
+)
+
+# Porcentaje de valores reales dentro del intervalo de confianza al 95%
+dentro_95 <- mean(
+  intervalos_arima$real >= intervalos_arima$li_95 &
+    intervalos_arima$real <= intervalos_arima$ls_95
+) * 100
+
+cat(paste0("Porcentaje de valores reales dentro del IC 95% de ARIMA: ",
+           round(dentro_95, 1), "%\n"))
+
+# Gráfico de fiabilidad ARIMA con bandas de confianza
+hist_df <- data.frame(fecha = index(precio_cierre["2024-01-01/2025-04-30"]),
+                      real  = as.numeric(precio_cierre["2024-01-01/2025-04-30"]),
+                      li_80 = NA, ls_80 = NA, li_95 = NA, ls_95 = NA)
+
+ggplot(rbind(hist_df, intervalos_arima), aes(x = fecha)) +
+  geom_ribbon(aes(ymin = li_95, ymax = ls_95), fill = "steelblue", alpha = 0.15) +
+  geom_ribbon(aes(ymin = li_80, ymax = ls_80), fill = "steelblue", alpha = 0.25) +
+  geom_line(aes(y = real), color = "black") +
+  geom_line(data = intervalos_arima, aes(y = pred_arima_valores), color = "steelblue", linetype = "dashed") +
+  geom_vline(xintercept = as.Date("2025-05-01"), linetype = "dotted", color = "gray40") +
+  labs(title = "Fiabilidad ARIMA - Mayo 2025", subtitle = "Bandas al 80% y 95%", x = "Fecha", y = "USD") +
+  theme_minimal()
 
 
 
