@@ -1,0 +1,24 @@
+# 1. CARGA, PREPARACIÓN Y EXPLORACIÓN INICIAL DE LOS DATOS
+# 1.1 Carga de librerías
+library(dplyr)
+library(NbClust)     # Definir número de clusters: Método del codo
+library(factoextra)  # Definir número de clusters
+library(ClusterR)  # Método nuevo explicado el 19-05 por Amparo para definir el número de clusters en datasets muy grandes
+library(rpart)
+library(rpart.plot)
+
+# 1.2 Carga de datos
+
+# 1.3 Análisis exploratorio inicial
+
+
+
+# 2. ANÁLISIS CLUSTERING
+
+
+
+# 3. INTERPRETACIÓN DEL CLUSTERING
+
+
+
+# 4. ESTRATEGIA PARA EL CEO
