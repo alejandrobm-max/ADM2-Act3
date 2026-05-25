@@ -1,4 +1,19 @@
-# 1. CARGA, PREPARACIÓN Y EXPLORACIÓN INICIAL DE LOS DATOS
+# ACTIVIDAD 3 - Proyecto Transversal: Inteligencia de Negocio Aplicada en AdventureWorks
+
+###################################################################################################################################################
+# Hemos utilizado la BD dataset_AW.xlsx de la carpeta Actividad 3_Análisis II del aula virtual de la asignatura como objeto del presente trabajo. #
+###################################################################################################################################################
+
+
+
+# 1. CARGA, PREPARACIÓN Y ANÁLISIS EXPLORATORIO: CONTEXTUALIZACIÓN DE LOS PRODUCTOS DE LAS TIENDAS Y NIVEL DE BENEFICIO (JOEL)
+
+  # Realizamos un análisis exploratorio para poder contextualizar los productos de las tiendas y entender el nivel de beneficio. 
+  # Investigamos qué significan las distintas variables teniendo en cuenta diversos análisis relacionados:
+  # El número de productos ordenados, su precio, coste, tipología de producto… 
+  # La finalidad que perseguimos es realizar un perfilado de compras de la tienda para que el CEO tenga una información base contextual. 
+  # Para ello utilizamos agrupaciones por diversas columnas y calcularemos valores medios o de la mediana en función de ese agrupamiento.
+
 # 1.1 Carga de librerías
 library(dplyr)
 library(NbClust)     # Definir número de clusters: Método del codo
@@ -13,12 +28,28 @@ library(rpart.plot)
 
 
 
-# 2. ANÁLISIS CLUSTERING
+# 2. ANÁLISIS CLUSTERING (DIEGO)
+
+  # Realizamos un análisis de clustering para encontrar patrones dentro de los datos. Esta agrupación considera los criterios 
+  # transaccionales (precio, cantidad, ...). Finalmente, realizamos una explicación analítica de los resultados con un enfoque 
+  # nivel técnico e interpreta los grupos que han salido.
 
 
 
-# 3. INTERPRETACIÓN DEL CLUSTERING
+# 3. INTERPRETACIÓN DEL CLUSTERING: RESPUESTA PARA EL DIRECTOR DE MARKETING  (ALEX)
+
+  # Con los resultados del clustering elaboramos una respuesta para el director de Marketing con el objetivo de hacerle entender 
+  # la información hallada, por lo que las explicaciones de los resultados tienen un enfoque de negocio. Por tanto responderemos a 
+  # preguntas como: ¿qué grupos identificamos?, ¿qué significan para la tienda?, ¿cuales tienen un mayor beneficio económico?, 
+  # ¿cuáles menos?, ¿hay algún patrón estético o funcional de los productos que sean tendencia?... 
+
+# HAY QUE APLICAR AL RESULTADO DEL CLUSTERING UN ÁRBOL DE DECISIÓN PARA INTERPRETARLO
 
 
 
-# 4. ESTRATEGIA PARA EL CEO
+# 4. ESTRATEGIA PARA EL CEO  (DAVID)
+
+  # Ya elaborado el reporte para el director de marketing, llega el turno de elaborar una estrategia para el CEO. Recomendamos acciones 
+  # específicas basadas en todos los resultados anteriores para aumentar beneficios. Atenderemos a cuestiones como: Si se quiere aumentar 
+  # beneficios, ¿qué tipo de productos hay que incentivar más?, ¿qué tipo de diseños? ¿qué productos podrían tener una retirada del mercado?
+
