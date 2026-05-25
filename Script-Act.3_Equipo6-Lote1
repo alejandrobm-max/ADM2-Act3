@@ -24,7 +24,251 @@ library(rpart.plot)
 
 # 1.2 Carga de datos
 
+data <- read.xlsx("dataset_AW.xlsx")
+
 # 1.3 Análisis exploratorio inicial
+
+str(data)
+
+## 1.3.1 Limpieza inicial
+
+data <- clean_names(data) # Limpiar nombres de columnas
+
+# Factorizar columnas no numéricas
+
+data <- data %>%
+  mutate(
+    bike_purchase = as.factor(bike_purchase),
+    marital_status = as.factor(marital_status),
+    gender = as.factor(gender),
+    country = as.factor(country),
+    group = as.factor(group),
+    education = as.factor(education),
+    occupation = as.factor(occupation),
+    yearly_income = as.factor(yearly_income),
+    home_owner_flag = as.factor(home_owner_flag)
+  ) %>%
+  select(-customer_id, -person_id)
+
+# Aplicar formato fecha
+
+data <- data %>%
+  mutate(
+    date_first_purchase = as.Date(date_first_purchase, origin = "1899-12-30"),
+    birth_date = as.Date(birth_date, origin = "1899-12-30")
+  )
+
+## 1.3.2 EDA
+
+# Estructura
+str(data)
+
+# Resumen estadístico
+summary(data)
+
+# Resumen más completo
+skim(data)
+
+# Valores nulos
+colSums(is.na(data))
+
+# Perfil de compra por ingresos
+
+data %>%
+  group_by(yearly_income) %>%
+  summarise(
+    purchase_rate = mean(as.numeric(as.character(bike_purchase))),
+    avg_spending = mean(total_amount, na.rm = TRUE),
+    count = n()
+  ) %>%
+  arrange(desc(purchase_rate))
+
+# INSIGHT:
+# - Los clientes con ingresos entre 50k–75k presentan la mayor tasa de compra (52%)
+# - Los clientes con >100k tienen el mayor gasto medio (2300), aunque no la mayor tasa
+# - Los clientes con menores ingresos (0–25k) muestran menor propensión (40%) y menor gasto
+# CONCLUSIÓN:
+# - Existe relación positiva entre ingresos y valor económico del cliente
+# - La propensión a comprar no crece de forma lineal con el ingreso
+
+# Perfil de compra por edad
+
+data %>%
+  group_by(bike_purchase) %>%
+  summarise(
+    avg_age = mean(age, na.rm = TRUE),
+    median_age = median(age, na.rm = TRUE)
+  )
+
+data %>%
+  mutate(age_group = cut(age, breaks = c(0,30,45,60,100))) %>%
+  group_by(age_group) %>%
+  summarise(
+    purchase_rate = mean(as.numeric(as.character(bike_purchase)))
+  )
+
+# INSIGHT:
+# - Los compradores son ligeramente más jóvenes (57 vs 59 años)
+# - El grupo 45–60 años presenta la mayor tasa de compra (56%)
+# - Menor propensión en jóvenes (<45) y mayores (>60)
+# CONCLUSIÓN:
+# - El segmento principal está en edades medias
+
+# Perfil por género
+
+data %>%
+  group_by(gender) %>%
+  summarise(
+    purchase_rate = mean(as.numeric(as.character(bike_purchase))),
+    avg_spending = mean(total_amount)
+  )
+
+# INSIGHT:
+# - Las mujeres tienen ligeramente mayor tasa de compra (50% vs 48%)
+# - También presentan mayor gasto medio (1622 vs 1555)
+# CONCLUSIÓN:
+# - Diferencia moderada, pero el segmento femenino es ligeramente más valioso
+
+# Perfil por educacion
+
+data %>%
+  group_by(education) %>%
+  summarise(
+    purchase_rate = mean(as.numeric(as.character(bike_purchase))),
+    avg_spending = mean(total_amount)
+  ) %>%
+  arrange(desc(purchase_rate))
+
+# INSIGHT:
+# - A mayor nivel educativo, mayor tasa de compra:
+#   Bachelors (56%) > Graduate (53%) > High School (41%) > Partial HS (31%)
+# - El gasto medio también aumenta con la educación
+# CONCLUSIÓN:
+# - La educación actúa como proxy de ingresos y afinidad al producto
+
+# Perfil por ocupación
+
+data %>%
+  group_by(occupation) %>%
+  summarise(
+    purchase_rate = mean(as.numeric(as.character(bike_purchase))),
+    avg_spending = mean(total_amount)
+  ) %>%
+  arrange(desc(purchase_rate))
+
+# INSIGHT:
+# - Mayor tasa de compra en perfiles Clerical (56%) y Professional (50%)
+# - Menor en perfiles Manual (43%)
+# CONCLUSIÓN:
+# - Perfiles más cualificados o administrativos presentan mayor propensión
+
+# Hogar y compra
+
+data %>%
+  group_by(home_owner_flag) %>%
+  summarise(
+    purchase_rate = mean(as.numeric(as.character(bike_purchase)))
+  )
+
+# INSIGHT:
+# - Diferencias mínimas entre propietarios y no propietarios (49% vs 50%)
+# CONCLUSIÓN:
+# - Variable poco relevante para explicar la compra
+
+# Hijos vs compra
+
+data %>%
+  group_by(total_children) %>%
+  summarise(
+    purchase_rate = mean(as.numeric(as.character(bike_purchase)))
+  )
+
+# INSIGHT:
+# - Máxima tasa de compra con 1 hijo (60%)
+# - Disminuye progresivamente a partir de 3 hijos (31% con 5 hijos)
+# CONCLUSIÓN:
+# - Familias grandes reducen la probabilidad de compra (limitación económica/prioridades)
+
+# Coches vs compra
+
+data %>%
+  group_by(number_cars_owned) %>%
+  summarise(
+    purchase_rate = mean(as.numeric(as.character(bike_purchase)))
+  )
+
+# INSIGHT:
+# - Mayor tasa de compra en clientes con 0 coches (63%)
+# - Disminuye conforme aumenta el número de coches (37% con 4 coches)
+# CONCLUSIÓN:
+# - Relación inversa clara: la bicicleta actúa como sustituto del coche
+
+# Country vs compra
+
+data %>%
+  group_by(country) %>%
+  summarise(
+    purchase_rate = mean(as.numeric(as.character(bike_purchase))),
+    avg_spending = mean(total_amount, na.rm = TRUE),
+    count = n()
+  ) %>%
+  arrange(desc(purchase_rate))
+
+# INSIGHT:
+# - Australia presenta la mayor tasa de compra (60%) y el mayor gasto medio (2523)
+# - Reino Unido y Alemania también muestran altas tasas (>50%) con gasto elevado
+# - Regiones como Southwest y Northwest tienen tasas medias (41–49%) pero alto volumen de clientes
+# - Algunas regiones (Northeast, Southeast, Central) tienen tasas bajas y con muy bajo número de observaciones (n<15)
+
+# CONCLUSIÓN:
+# - Existen diferencias claras por país/región en comportamiento de compra
+# - Australia destaca como el mercado más rentable (alta conversión + alto gasto)
+# - Regiones con alto volumen (US) son clave en impacto total aunque con menor tasa
+
+# Estado marital vs compra
+
+data %>%
+  group_by(marital_status) %>%
+  summarise(
+    purchase_rate = mean(as.numeric(as.character(bike_purchase))),
+    avg_spending = mean(total_amount, na.rm = TRUE),
+    count = n()
+  )
+
+# INSIGHT:
+# - Los clientes solteros (S) presentan mayor tasa de compra (53% vs 46%)
+# - También tienen mayor gasto medio (1673 vs 1517)
+# - Los casados (M) representan mayor volumen de clientes
+
+# CONCLUSIÓN:
+# - Los solteros muestran mayor propensión y valor económico
+# - Los casados, aunque menos propensos, tienen mayor peso en volumen
+# - El estado civil influye, pero probablemente está capturando diferencias en el ciclo de vida (ej. hijos)
+
+
+# CONCLUSIÓN GLOBAL:
+# - Cliente tipo:
+#   * Edad 45–60 años
+#   * Ingresos medios-altos
+#   * Nivel educativo alto
+#   * Mayor probabilidad de ser soltero
+#   * 0–1 hijos
+#   * Pocos o ningún coche
+#   * Mayor presencia en mercados de alto rendimiento (ej. Australia, UK)
+
+# - Drivers principales de compra:
+#   * Nivel de ingresos (capacidad económica)
+#   * Educación (proxy de ingresos y afinidad)
+#   * Ciclo de vida familiar (especialmente número de hijos)
+#   * Sustitución con coche (menos coches → mayor compra)
+#   * Factor geográfico (diferencias relevantes entre países)
+
+# - Variables con impacto moderado:
+#   * Estado civil (posiblemente influenciado por hijos y edad)
+#   * Género (ligeras diferencias en tasa y gasto)
+
+# - Variables poco relevantes:
+#   * Propiedad de vivienda
 
 
 
