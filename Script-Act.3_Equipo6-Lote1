@@ -274,9 +274,125 @@ data %>%
 
 # 2. ANÁLISIS CLUSTERING (DIEGO)
 
-  # Realizamos un análisis de clustering para encontrar patrones dentro de los datos. Esta agrupación considera los criterios 
-  # transaccionales (precio, cantidad, ...). Finalmente, realizamos una explicación analítica de los resultados con un enfoque 
-  # nivel técnico e interpreta los grupos que han salido.
+# Realizamos un análisis de clustering para encontrar patrones dentro de los datos. Esta agrupación considera los criterios 
+# transaccionales (precio, cantidad, ...). Finalmente, realizamos una explicación analítica de los resultados con un enfoque 
+# nivel técnico e interpreta los grupos que han salido.
+
+View(data)
+
+datos_clusterizacion <- data
+colnames(datos_clusterizacion)
+
+# Ahora seleccionamos las variables que nos interesan, que serían todas menos las variables fecha.
+
+datos_clusterizacion <- datos_clusterizacion %>% select("total_amount","bike_purchase","country","country_region_code","group","age","marital_status","yearly_income","gender","total_children","education","occupation","home_owner_flag","number_cars_owned")
+
+colSums(is.na(datos_clusterizacion))
+
+str(datos_clusterizacion)
+
+# Pasamos todas las variables texto y factor a númericas.
+
+datos_clusterizacion$bike_purchase <- as.numeric(as.factor(datos_clusterizacion$bike_purchase))
+datos_clusterizacion$country <- as.numeric(as.factor(datos_clusterizacion$country))
+datos_clusterizacion$country_region_code <- as.factor(as.character(datos_clusterizacion$country_region_code))
+datos_clusterizacion$country_region_code <- as.numeric(as.factor(datos_clusterizacion$country_region_code))
+datos_clusterizacion$group <- as.numeric(as.factor(datos_clusterizacion$group))
+datos_clusterizacion$marital_status <- as.numeric(as.factor(datos_clusterizacion$marital_status))
+datos_clusterizacion$yearly_income <- as.numeric(as.factor(datos_clusterizacion$yearly_income))
+datos_clusterizacion$gender <- as.numeric(as.factor(datos_clusterizacion$gender))
+datos_clusterizacion$education <- as.numeric(as.factor(datos_clusterizacion$education))
+datos_clusterizacion$occupation <- as.numeric(as.factor(datos_clusterizacion$occupation))
+datos_clusterizacion$home_owner_flag <- as.numeric(as.factor(datos_clusterizacion$home_owner_flag))
+str(datos_clusterizacion)
+
+datos_cluster_scaled <- scale(datos_clusterizacion)
+View(datos_cluster_scaled)
+
+# Método del codo. 
+
+# Primero he utilizado fviz_nbclust porque el método de Amparo me estaba dando problemas (no obstante, me ha salido posteriormente,
+# pero dejo este también para que podamos elegir, el resultado óptimo son 4 clusters).
+
+set.seed(123)
+
+clusterizacion <- fviz_nbclust(datos_cluster_scaled,kmeans,method='wss')
+plot(clusterizacion)
+clusterizacion$data
+
+library(ClusterR)
+
+# Este es con ClusterR, tenemos un gráfico que nos llevaría a interpretar entre 3 y 4 clusters, más bien 4, coincide con el anterior.
+
+wss <- numeric(10)
+
+for (k in 2:10){
+  # kmeans. 
+  modelo <- kmeans(datos_cluster_scaled, centers = k, nstart = 10)
+  
+  # tot.withinss es el WCSS total directo.
+  wss[k] <- modelo$tot.withinss
+}
+
+plot(2:10, wss[2:10], type = "b", xlab = "k", ylab = "WCSS")
+
+
+# Ahora realizamos el modelo final para poder interpretar los resultados.
+
+
+modelo_final <- kmeans(datos_cluster_scaled, centers = 4, nstart = 25)
+
+# Asignamos el cluster a la base de datos original, así quedan reflejados en los datos reales y no escalados.
+data_perfiles <- data %>% 
+  mutate(cluster_asignado = as.factor(modelo_final$cluster))
+
+# Calculamos las medias de cada cluster para ver cómo es cada grupo.
+resumen_clusters <- data_perfiles %>%
+  group_by(cluster_assigned = cluster_asignado) %>%
+  summarise(
+    Cantidad_Clientes = n(),
+    Gasto_Promedio = mean(total_amount, na.rm = TRUE),
+    Edad_Promedio = mean(age, na.rm = TRUE),
+    Hijos_Promedio = mean(total_children, na.rm = TRUE),
+    Coches_Promedio = mean(number_cars_owned, na.rm = TRUE)
+  )
+
+print(resumen_clusters)
+
+# Para la identificación de patrones de comportamiento transaccional y demográfico en las tiendas se aplicó un algoritmo
+# K-Means sobre el conjunto de datos escalado (estandarizado).
+# La selección de variables cuantitativas nos ha permitido estructurar un entorno de análisis óptimo.
+# Se ha utilizado el método del codo, que ha determinado un número óptimo de clusters k=4, representaría el punto de inflexión
+# en el que la ganancia de información intraclusters se estabiliza.
+
+# Basándonos en las medias obtenidas podemos perfilar los siguientes 4 segmentos:
+
+# Cluster 1: Clientes VIP / Alta rentabilidad: n=4.841 (26,20% de la muestra).
+# Son clientes de edad madura (57,10 años) con familia (1,73 hijos) y alto nivel de movilidad (1,76 coches).
+# Es el segmento más valioso para la compañía, tiene el gasto promedio más alto (2.247$), se debe focalizar en ellos campañas
+# de fidelización y venta de productos premium.
+
+# Cluster 2: Senior: n=4.952 (26,80% de la muestra).
+# Este grupo es el de mayor edad (68,60 años), mayor número de hijos (3,18) y de coches (2.33).
+# Son por poco el grúpo más numeroso pero el menos rentable a nivel transaccional, tienen el menor gasto medio (1.32$).
+# Asumimos que, coincidiendo con el análisis EDA, a mayor número de hijos y coches, las prioridades económicas se modifican y el
+# gasto en bicicletas cae.
+
+# Cluster 3: Adultos: n= 4.493 (24,30% de la muestra).
+# Tienen una edad media de 55,10 años y 1,31 hijos con 0.914 vehículos. Su gasto es moderado-bajo (1.334$), encajarían en un perfil
+# que al tener menos de un coche por hogar, admitiríamos la posibilidad del uso de la bicicleta como medio de transporte alternativo
+# o recreativo. 
+
+# Cluster 4: Edad media con potencial comprador: n= 4.198 (22,70% de la muestra).
+# Es el grupo más joven con 51,50 años y con menos hijos, menos de uno por familia, también tienen la menor cantidad de vehículos por
+# hogar. Observan el segundo mayor gasto promedio (1.521$), se considera un grupo joven sin cargas familiares elevadas ni dependencia
+# de vehículos, los haría candidatos para estrategias de marketing digital que pusieran el foco en estilos de vida saludables.
+
+# Este análisis clustering complementa el análisis exploratorio inicial. El modelo determina que el tráfico comercial de la compañía
+# no depende únicamente de una masa particular sino que tendría dos focos principales basados en la capacidad económica del cluster 1
+# y el gasto que pudiera generar el estilo de vida del cluster 4.
+# Las variables referidas a número de hijos y coches serían la que actuarían como principales predictores inversos del volumen de gastos.
+
 
 
 
