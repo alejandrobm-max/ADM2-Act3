@@ -22,8 +22,8 @@ library(skimr)       # Resumen estadístico detallado y estructurado de un conju
 library(NbClust)     # Definir número de clusters: Método del codo
 library(factoextra)  # Definir número de clusters
 library(ClusterR)    # Método nuevo explicado el 19-05 por Amparo para definir el número de clusters en datasets muy grandes
-library(rpart)
-library(rpart.plot)
+library(rpart)       # La usaremos para hacer las interpretaciones más profundas del clustering mediante árbol de decisión
+library(rpart.plot)  # Representación visual del árbol de decisión
 
 # 1.2 Carga de datos
 
