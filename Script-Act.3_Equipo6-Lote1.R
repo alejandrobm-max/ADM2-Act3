@@ -15,16 +15,17 @@
   # Para ello utilizamos agrupaciones por diversas columnas y calcularemos valores medios o de la mediana en función de ese agrupamiento.
 
 # 1.1 Carga de librerías
+library(readxl)
 library(dplyr)
 library(NbClust)     # Definir número de clusters: Método del codo
 library(factoextra)  # Definir número de clusters
-library(ClusterR)  # Método nuevo explicado el 19-05 por Amparo para definir el número de clusters en datasets muy grandes
+library(ClusterR)    # Método nuevo explicado el 19-05 por Amparo para definir el número de clusters en datasets muy grandes
 library(rpart)
 library(rpart.plot)
 
 # 1.2 Carga de datos
 
-data <- read.xlsx("dataset_AW.xlsx")
+data <- read_excel("dataset_AW.xlsx")
 
 # 1.3 Análisis exploratorio inicial
 
