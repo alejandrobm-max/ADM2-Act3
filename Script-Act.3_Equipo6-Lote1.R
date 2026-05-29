@@ -17,6 +17,8 @@
 # 1.1 Carga de librerías
 library(readxl)
 library(dplyr)
+library(janitor)     # Estandarizar automáticamente los nombres de las columnas
+library(skimr)       # Resumen estadístico detallado y estructurado de un conjunto de datos
 library(NbClust)     # Definir número de clusters: Método del codo
 library(factoextra)  # Definir número de clusters
 library(ClusterR)    # Método nuevo explicado el 19-05 por Amparo para definir el número de clusters en datasets muy grandes
