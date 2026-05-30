@@ -487,7 +487,7 @@ rpart.plot(arbol_clusters)
 
 
 
-# 4. ESTRATEGIA PARA EL CEO  (DAVID)
+# 4. ESTRATEGIA PARA EL CEO
 
   # Ya elaborado el reporte para el director de marketing, llega el turno de elaborar una estrategia para el CEO. Recomendamos acciones 
   # específicas basadas en todos los resultados anteriores para aumentar beneficios. Atenderemos a cuestiones como: Si se quiere aumentar 
