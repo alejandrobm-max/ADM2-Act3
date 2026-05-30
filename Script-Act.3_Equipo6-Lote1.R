@@ -6,7 +6,7 @@
 
 
 
-# 1. CARGA, PREPARACIÓN Y ANÁLISIS EXPLORATORIO: CONTEXTUALIZACIÓN DE LOS PRODUCTOS DE LAS TIENDAS Y NIVEL DE BENEFICIO (JOEL)
+# 1. CARGA, PREPARACIÓN Y ANÁLISIS EXPLORATORIO: CONTEXTUALIZACIÓN DE LOS PRODUCTOS DE LAS TIENDAS Y NIVEL DE BENEFICIO
 
   # Realizamos un análisis exploratorio para poder contextualizar los productos de las tiendas y entender el nivel de beneficio. 
   # Investigamos qué significan las distintas variables teniendo en cuenta diversos análisis relacionados:
@@ -275,7 +275,7 @@ data %>%
 
 
 
-# 2. ANÁLISIS CLUSTERING (DIEGO)
+# 2. ANÁLISIS CLUSTERING
 
 # Realizamos un análisis de clustering para encontrar patrones dentro de los datos. Esta agrupación considera los criterios 
 # transaccionales (precio, cantidad, ...). Finalmente, realizamos una explicación analítica de los resultados con un enfoque 
@@ -398,15 +398,92 @@ print(resumen_clusters)
 
 
 
-
-# 3. INTERPRETACIÓN DEL CLUSTERING: RESPUESTA PARA EL DIRECTOR DE MARKETING  (ALEX)
+# 3. INTERPRETACIÓN DEL CLUSTERING: RESPUESTA PARA EL DIRECTOR DE MARKETING
 
   # Con los resultados del clustering elaboramos una respuesta para el director de Marketing con el objetivo de hacerle entender 
   # la información hallada, por lo que las explicaciones de los resultados tienen un enfoque de negocio. Por tanto responderemos a 
   # preguntas como: ¿qué grupos identificamos?, ¿qué significan para la tienda?, ¿cuales tienen un mayor beneficio económico?, 
   # ¿cuáles menos?, ¿hay algún patrón estético o funcional de los productos que sean tendencia?... 
 
-# HAY QUE APLICAR AL RESULTADO DEL CLUSTERING UN ÁRBOL DE DECISIÓN PARA INTERPRETARLO
+# APLICAREMOS AL RESULTADO DEL CLUSTERING UN ÁRBOL DE DECISIÓN PARA INTERPRETARLO MÁS PROFUNDAMENTE
+
+arbol_clusters <- rpart(modelo_final$cluster ~ data$total_amount + data$bike_purchase + data$age +
+                          data$yearly_income + data$total_children + data$number_cars_owned +
+                          data$marital_status + data$gender + data$education + data$occupation +
+                          data$home_owner_flag + data$country + data$group + data$country_region_code,
+  method = "class"
+)
+
+summary(arbol_clusters)
+
+# Dibujamos el árbol para poder interpretar las reglas de clasificación del clustering 
+
+rpart.plot(arbol_clusters)
+
+## Interpretación del clustering mediante árbol de decisión
+
+# Hemos aplicado un árbol de decisión para interpretar qué variables explican mejor la pertenencia
+# de cada cliente a un grupo. Por supuesto, el árbol no se utiliza para sustituir al clustering, 
+# sino para entenderlo mejor y traducir sus resultados a un lenguaje más útil para Marketing.
+
+# El árbol muestra que las variables más importantes para diferenciar los clusters son, principalmente:
+# el país o región, el grupo geográfico, la ocupación, los ingresos anuales, el número de hijos, 
+# el número de coches en el hogar y la edad. Por tanto, la segmentación no depende únicamente del
+# gasto del cliente, sino también de su contexto geográfico, profesional y familiar.
+
+# La primera separación relevante del árbol se produce por la variable geográfica. Esto indica que 
+# algunos clusters están muy condicionados por el mercado o territorio al que pertenece el cliente.
+# En concreto, el cluster 4 aparece como un grupo muy claro y diferenciado, ya que la última de las ramas
+# del árbol concentra el 28% de la muestra y tiene una probabilidad del 94% de pertenecer a este 
+# cluster. Desde una perspectiva de negocio, esto refuerza la idea de que el cluster 4 debe tratarse
+# como un segmento prioritario, especialmente porque en el análisis previo se identificó como el 
+# grupo con mayor rentabilidad económica. De esta forma:
+
+  # El cluster 4, por tanto, representa el segmento más atractivo para la tienda. No solo destaca por
+  # su mayor valor económico, sino que además está muy asociado a determinados mercados. Para Marketing,
+  # esto implica que las campañas dirigidas a este grupo deberían centrarse en fidelización, productos
+  # de mayor valor, accesorios, calidad, rendimiento y experiencia de marca. No parece recomendable ç
+  # abordarlo únicamente mediante descuentos, ya que se trata de un grupo con mayor capacidad de 
+  # generación de beneficio.
+
+  # El cluster 1 se interpreta como un perfil más familiar y funcional. El árbol lo relaciona con 
+  # clientes de determinadas ocupaciones, con dos o más hijos y al menos un coche en el hogar. 
+  # Esta rama representa el 24% de la muestra y tiene una probabilidad del 92% de pertenecer al cluster 1.
+  # Desde Marketing, este grupo podría responder mejor a mensajes centrados en seguridad, durabilidad,
+  # comodidad y uso familiar de la bicicleta.
+
+  # El cluster 2 queda muy condicionado por la ocupación. El árbol identifica una rama que representa
+  # el 24% de la muestra y donde la probabilidad de pertenecer al cluster 2 es del 97%. Esto significa
+  # que es un grupo bastante homogéneo y fácil de segmentar desde el punto de vista profesional. Si se
+  # trata de un cluster con menor rentabilidad, la estrategia debería orientarse a promociones, productos
+  # accesibles, financiación o campañas basadas en la relación calidad-precio.
+
+  # El cluster 3 aparece asociado a clientes con menor carga familiar y menor dependencia del coche. 
+  # Una de sus ramas representa el 18% de la muestra y tiene una probabilidad del 97% de pertenecer a este 
+  # grupo. Esto puede indicar un perfil más vinculado a la movilidad alternativa, la vida activa o el uso 
+  # recreativo de la bicicleta. Por ello, este cluster puede ser interesante para campañas relacionadas 
+  # con sostenibilidad, salud, deporte, comodidad urbana y estilo de vida.
+
+# Respecto al beneficio económico (como ya adelantábamos), el cluster 4 es el grupo más relevante, ya que
+# combina mayor rentabilidad y una identificación clara mediante el árbol. El cluster 3 puede entenderse 
+# como un segmento con potencial de crecimiento, mientras que los clusters 1 y 2 requieren estrategias
+# más específicas: el primero desde un enfoque familiar y funcional, y el segundo desde una propuesta 
+# más racional basada en precio y conveniencia.
+
+# En cuanto a patrones funcionales, los clientes con más hijos y coches parecen estar más vinculados a 
+# un uso familiar o recreativo, mientras que los clientes con menos coches pueden estar más relacionados 
+# con una necesidad de movilidad alternativa. Además, los segmentos de mayor valor pueden mostrar mayor
+# predisposición hacia productos de gama superior o complementos.
+
+##############################################################################################################
+# Por tanto, el árbol de decisión nos ha permitido explicar los clusters de una forma más accionable para    #
+# Marketing. Hemos comprobado que los grupos no se diferencian solo por cuánto gastan, sino por dónde están, # 
+# qué perfil profesional tienen, cuál es su situación familiar y qué nivel de movilidad poseen. Por ello,    # 
+# recomendamos no utilizar una única campaña generalista, sino diseñar mensajes diferenciados para cada      #
+# cluster: campañas premium y de fidelización para el cluster 4, mensajes funcionales y familiares para      #
+# el cluster 1, promociones y accesibilidad para el cluster 2, y comunicación basada en movilidad, salud     #
+# y estilo de vida para el cluster 3.                                                                        #
+##############################################################################################################
 
 
 
