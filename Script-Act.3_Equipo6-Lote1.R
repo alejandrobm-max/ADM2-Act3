@@ -489,7 +489,52 @@ rpart.plot(arbol_clusters)
 
 # 4. ESTRATEGIA PARA EL CEO
 
-  # Ya elaborado el reporte para el director de marketing, llega el turno de elaborar una estrategia para el CEO. Recomendamos acciones 
-  # específicas basadas en todos los resultados anteriores para aumentar beneficios. Atenderemos a cuestiones como: Si se quiere aumentar 
-  # beneficios, ¿qué tipo de productos hay que incentivar más?, ¿qué tipo de diseños? ¿qué productos podrían tener una retirada del mercado?
+# Ya elaborado el reporte para el director de marketing, llega el turno de elaborar una estrategia para el CEO. Recomendamos acciones 
+# específicas basadas en todos los resultados anteriores para aumentar beneficios. Atenderemos a cuestiones como: Si se quiere aumentar 
+# beneficios, ¿qué tipo de productos hay que incentivar más?, ¿qué tipo de diseños? ¿qué productos podrían tener una retirada del mercado?
+
+# A partir de los perfiles extraídos en el EDA y los segmentos de alto valor descubiertos en el clustering (especialmente 
+# los Clusters 1 y 4, que concentran el mayor nivel de gasto y rentabilidad), se proponen las siguientes líneas de acción 
+# directas para el CEO:
+
+# 4.1 ¿Qué tipo de productos hay que incentivar más?
+# Para aumentar los márgenes de beneficio, la estrategia de compras e inventario debe volcarse en potenciar los 
+# productos con mayor margen de los dos grupos más rentables:
+
+#   Para el Cluster 4 (el grupo más atractivo: menor edad relativa, menor carga familiar, movilidad ágil y rentabilidad): 
+#   debemos incentivar la venta de bicivletas de alta gama (Road-Bikes y Mountain-Bikes de las series 100 y 200) y accesorios 
+#   de rendimiento y estilo de vida (Hydration Packs, y ropa técnica como maillots, shorts y guantes). Este perfil 
+#   no ve la bicicleta como una obligación, sino como un deporte, ocio premium y estatus.
+#
+#   Para el Cluster 1 (Clientes VIP familiares: gasto más alto, maduros, con hijos y con coches): 
+#   Al tener vehículos en propiedad y un marcado perfil familiar, hay que incentivar activamente los accesorios de 
+#   transporte y seguridad (cross-selling). Productos como los portabicicletas para el coche, cascos
+#   y productos de mantenimiento (bike wash). El objetivo es facilitarles el uso recreativo y familiar 
+#   en sus salidas de fin de semana, vinculando el uso de la bici al uso del coche.
+
+# 4.2 ¿Qué tipo de diseños?
+# Revisando el catálogo (datos sin etiquetas) y cruzándolo con la percepción de marca:
+#   Diseños sobrios y premium: Para las bicicletas de alto valor adquisitivo (que busca el Cluster 4), los colores "Black" (Negro) 
+#   y "Silver" (Plata) dominan las ventas históricas. Se perciben como diseños tecnológicos, elegantes y de gama alta. Hay que 
+#   incentivar estos acabados en el stock de bicis caras.
+#   Diseños de alta visibilidad: Para las bicicletas de carretera y clientes enfocados en la seguridad (como el Cluster 1 familiar 
+#   o el Cluster 3 urbano), hay que apostar por acabados "Red" (Rojo) y "Yellow" (Amarillo). Estos colores incrementan la 
+#   visibilidad en el asfalto y ofrecen un aspecto más puramente deportivo.
+#   Diseños Corporativos ("Multi" / Logo): Toda la línea de ropa (caps, jerseys) con diseños que incorporan el logo de la empresa 
+#   funciona de muy bien para generar identidad de marca. Estos diseños deben impulsarse como complementos baratos o regalos 
+#   en compras de alto valor.
+
+
+# 4.3 ¿Qué productos podrían tener una retirada en el mercado?
+# Para optimizar el inventario, disminuir el stock inmovilizado en almacén y reducir costes logísticos:
+#   Componentes sueltos y repuestos específicos: El catálogo cuenta con gran cantidad de piezas individuales (cuadros sueltos o 
+#   'Frames', desviadores o 'Derailleurs', ejes de pedalier o 'Bottom Brackets'). El perfil predominante de la tienda B2C 
+#   (oficinistas, profesionales y familias, según el EDA) compra el producto ensamblado y listo para usar; no son mecánicos expertos 
+#   que monten bicicletas a piezas. Se recomienda retirar o minimizar drásticamente el stock de estos componentes técnicos.
+# - Tallas extremas y modelos sin rotación: Analizar la retirada de modelos de ropa fuera de los colores básicos si las tallas 
+#   poco comunes presentan una rotación muy baja que no justifica su coste de almacenamiento y producción.
+# - Segmento no rentable (Cluster 2): Dado que los Seniors con alto volumen de hijos y coches presentan el gasto más bajo, 
+#   productos antiguos que requieran mucho esfuerzo físico y que se dirigían históricamente a este público sin tener ventas, 
+#   deberían descatalogarse.
+
 
